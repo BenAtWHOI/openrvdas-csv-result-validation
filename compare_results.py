@@ -76,7 +76,17 @@ def parse_line(line, config):
     # Extract timestamp
     timestamp_parts = [groups[i] for i in config['timestamp_groups']]
     timestamp_str = ' '.join(timestamp_parts)
-    timestamp = datetime.strptime(timestamp_str, config['timestamp_format'])
+    try:
+        timestamp = datetime.strptime(timestamp_str, config['timestamp_format'])
+    except ValueError as e:
+        print(f"Debug: Error parsing timestamp")
+        print(f"  Line: {line[:80]}...")
+        print(f"  Pattern: {config['pattern']}")
+        print(f"  Groups: {groups}")
+        print(f"  Timestamp parts: {timestamp_parts}")
+        print(f"  Timestamp string: '{timestamp_str}'")
+        print(f"  Format: {config['timestamp_format']}")
+        raise ValueError(f"time data '{timestamp_str}' does not match format '{config['timestamp_format']}'")
 
     # Extract data values
     data_groups = [groups[i] for i in config['data_groups']]
